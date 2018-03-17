@@ -1,0 +1,36 @@
+#stage{
+    height: 600px;
+    width: 800px;
+    margin: 0 auto;
+    background-color: #000000;
+    border: 2px red solid;
+    position: relative;
+}
+#start{
+    position: absolute;
+    left:0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 80px;
+    height: 30px;
+}
+#snake{
+    width: 10px;
+    height: 10px;
+    background-color: yellow;
+    position: absolute;
+}
+#food{
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    position: absolute;
+}
+.snakeBody{
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    position: absolute;
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇</title>
+    <link rel="stylesheet" href="tanchishe.css">
+</head>
+<body>
+<div id="stage">
+    <button id="start">开始游戏</button>
+    <div id="snake" class="snakeBody"></div>
+    <div class="snakeBody"></div>
+    <div class="snakeBody"></div>
+    <div id="food"></div>
+</div>
+</body>
+<script>
+    /* 具体功能
+    1.蛇的出现和食物的随机出现
+    2.蛇的运动  上下左右的键盘响应事件
+    3.蛇吃到食物，食物改变位置
+    4.蛇吃到食物自己变长一节
+    4.蛇撞墙
+    5.蛇吃到了自己
+    */
+    //开始游戏
+    var progress=null;//游戏进程控制计时器
+    var gameStart=false;
+    var startBtn=document.getElementById('start');
+    var stage=document.getElementById('stage');
+    var snake = new Snake();
+    var food = new Food();
+    startBtn.onclick=function () {
+        gameStart=true;
+        this.style.display='none';
+        food.appear();
+        snake.self.style.left='20px';
+        snake.body[1].style.left='10px';
+        snake.body[2].style.left=0;
+        snake.moveRight();
+    };
+    //创建蛇对象
+    function Snake () {
+        this.self=document.getElementById('snake');
+        this.body=document.getElementsByClassName('snakeBody');
+        this.direction='right';
+    }
+    Snake.prototype.moveLeft=function () {//蛇向左移动
+        this.bodyFollow();
+        this.self.style.left=this.self.offsetLeft-10+'px';
+        this.eatFood();
+        if(this.self.offsetLeft<0){
+            this.gameover();
+            clearTimeout(progress);
+            alert('你撞墙了！');
+        }else {
+            progress=setTimeout("snake.moveLeft()",300)
+        }
+    };
+    Snake.prototype.moveRight=function () {//蛇向右移动
+        this.bodyFollow();
+        this.self.style.left=this.self.offsetLeft+10+'px';
+        this.eatFood();
+        if(this.self.offsetLeft>790){
+            this.gameover();
+            clearTimeout(progress);
+            alert('你撞墙了！');
+        }else {
+            progress=setTimeout("snake.moveRight()",300)
+        }
+    };
+    Snake.prototype.moveUp=function () {//蛇向上移动
+        this.bodyFollow();
+        this.self.style.top=this.self.offsetTop-10+'px';
+        this.eatFood();
+        if(this.self.offsetTop<0){
+            this.gameover();
+            clearTimeout(progress);
+            alert('你撞墙了！');
+        }else{
+            progress=setTimeout("snake.moveUp()",300)
+        }
+    };
+    Snake.prototype.moveDown=function () {//蛇向下移动
+        this.bodyFollow();
+        this.self.style.top=this.self.offsetTop+10+'px';
+        this.eatFood();
+        if(this.self.offsetTop>590){
+            this.gameover();
+            clearTimeout(progress);
+            alert('你撞墙了！');
+        }else {
+            progress=setTimeout("snake.moveDown()",300)
+        }
+    };
+    Snake.prototype.bodyFollow=function () {
+        for(var i=this.body.length-1;i>0;i--){
+               this.body[i].style.left=this.body[i-1].offsetLeft+'px';
+               this.body[i].style.top=this.body[i-1].offsetTop+'px';
+        }
+    };
+    Snake.prototype.eatFood=function () {
+        //判断蛇是不是吃到自己了
+        for( var i=1 ;i<this.body.length;i++){
+            if(this.self.offsetLeft==this.body[i].offsetLeft &&this.self.offsetTop==this.body[i].offsetTop){
+                this.gameover();
+                clearTimeout(progress);
+                alert('你吃到自己了');
+                location.reload();
+            }
+        }
+        //判断蛇有没有吃到食物
+        if(food.self.offsetLeft==this.self.offsetLeft&&food.self.offsetTop==this.self.offsetTop){
+            food.appear();
+            var newDiv=document.createElement('div');
+            var l=this.body.length-1;
+            newDiv.className='snakeBody';
+            switch (this.direction){
+                case 'left':
+                    newDiv.style.left=this.body[l].offsetLeft+10+'px';
+                    newDiv.style.top=this.body[l].offsetTop+'px';
+                    break;
+                case 'right':
+                    newDiv.style.left=this.body[l].offsetLeft-10+'px';
+                    newDiv.style.top=this.body[l].offsetTop+'px';
+                    break;
+                case 'up':
+                    newDiv.style.left=this.body[l].offsetLeft+'px';
+                    newDiv.style.top=this.body[l].offsetTop+10+'px';
+                    break;
+                case 'down':
+                    newDiv.style.left=this.body[l].offsetLeft+'px';
+                    newDiv.style.top=this.body[l].offsetTop-10+'px';
+                    break;
+            }
+            stage.appendChild(newDiv);
+        }
+    };
+    Snake.prototype.gameover=function () {
+        this.self.style.display='none';
+        for(var i=0;i<this.body.length;i++){
+            this.body[i].style.display='none';
+        }
+    }
+    //创建食物对象
+    function Food() {
+        this.self=document.getElementById('food');
+    }
+    Food.prototype.appear=function () {
+        this.self.style.left=Math.floor(Math.random()*79)*10+'px';
+        this.self.style.top=Math.floor(Math.random()*59)*10+'px';
+    };
+    //键盘响应
+    document.onkeyup=function (ev) {
+        ev.preventDefault();
+        if(gameStart==true){
+            clearTimeout(progress);
+            if (ev.keyCode == 37){
+                snake.moveLeft();
+                snake.direction='left';
+            }
+            if(ev.keyCode == 38){
+                snake.moveUp();
+                snake.direction='up';
+            }
+            if(ev.keyCode == 39){
+                snake.moveRight();
+                snake.direction='right';
+            }
+            if(ev.keyCode == 40){
+                snake.moveDown();
+                snake.direction='down';
+            }
+        }
+    }
+</script>
+
+</html>
